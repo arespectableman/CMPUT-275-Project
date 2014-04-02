@@ -180,3 +180,32 @@ class Map:
         for v in path:
           pretty_path = pretty_path + " " + str(self._location[v][0]) + " " + str(self._location[v][1])
         return pretty_path
+        
+    def greedy_route(l):
+    """
+    Generate a route between multiple places using a greedy algorithm
+    where l is a list of vertices and l[0] is the starting node.
+    """
+    #start at the beginning, remove is from remaining possibilities
+    current = l[0]
+    l.pop(0)
+    greedy_path = [current]
+
+    #while there are still places to go
+    While l != 0:
+        nearest_dist = float("inf")
+        nearest_vert = None
+
+        #find the nearest vertex in l
+        for i in l:
+            path = find_path(current, i)
+            if path[4] < nearest_dist:
+                nearest_dist = path[4]
+                nearest_vert = i
+
+        #remove it and add it to the greedy_path
+        current = nearest_vert
+        l.remove(current)
+        greedy_path.append(current)
+            
+   return greedy_path
