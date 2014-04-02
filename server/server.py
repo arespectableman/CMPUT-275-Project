@@ -29,16 +29,17 @@ def route():
   """
   Generate a route from one location to another.
   """
-  # Process the coordinates
+  # Process the coordinates in a way that the map class can understand
   def process(val):
     return int(float(val)*100000)
 
-  start_lat = process(request.args.get('start_lat', '53.65488'))
-  start_lng = process(request.args.get('start_lng', '-113.33914'))
-  end_lat = process(request.args.get('end_lat', '53.64727'))
-  end_lng = process(request.args.get('end_lng', '-113.35890'))
+  start = eval(request.args.get('start', '(0, 0)')) #53.65488,-113.33914
+  end = eval(request.args.get('end', '(0, 0)')) #53.64727,-113.35890
 
-  path = map.find_path((start_lat, start_lng), (end_lat, end_lng))
+  start = (process(start[0]), process(start[1]))
+  end = (process(end[0]), process(end[1]))
+
+  path = map.find_path(start, end)
 
   return str(map.get_path_names(path))
 
