@@ -15,10 +15,9 @@ def venues():
   """
   Defaults location to Edmonton
   """
-  latitude = request.args.get('lat', '53.523325')
-  longitude = request.args.get('lng', '-113.524104')
+  location = eval(request.args.get('location', '(0, 0)'))
 
-  ll = u'' + latitude + ',' + longitude
+  ll = u'' + str(location[0]) + ',' + str(location[1])
 
   response = client.venues.search(params={'ll': ll})
   parsed_response = json.dumps(response)
@@ -33,8 +32,8 @@ def route():
   def process(val):
     return int(float(val)*100000)
 
-  start = eval(request.args.get('start', '(0, 0)')) #53.65488,-113.33914
-  end = eval(request.args.get('end', '(0, 0)')) #53.64727,-113.35890
+  start = eval(request.args.get('start', '(0, 0)')) # 53.65488,-113.33914
+  end = eval(request.args.get('end', '(0, 0)')) # 53.64727,-113.35890
 
   start = (process(start[0]), process(start[1]))
   end = (process(end[0]), process(end[1]))

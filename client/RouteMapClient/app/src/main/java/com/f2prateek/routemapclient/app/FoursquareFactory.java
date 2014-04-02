@@ -1,6 +1,7 @@
 package com.f2prateek.routemapclient.app;
 
 import com.f2prateek.routemapclient.app.model.foursquare.VenuesResponse;
+import java.util.List;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.http.GET;
@@ -16,7 +17,7 @@ public class FoursquareFactory {
 
   public static void init() {
     RestAdapter restAdapter =
-        new RestAdapter.Builder().setEndpoint("http://113d2b7c.ngrok.com").build();
+        new RestAdapter.Builder().setEndpoint("http://b07ea95.ngrok.com").build();
     instance = restAdapter.create(Foursquare.class);
   }
 
@@ -28,7 +29,18 @@ public class FoursquareFactory {
   }
 
   public interface Foursquare {
-    @GET("/venues") void venues(@Query("lat") double latitude, @Query("lng") double longitude,
-        Callback<VenuesResponse> cb);
+    @GET("/venues") void venues(@Query("location") Location location, Callback<VenuesResponse> cb);
+
+    @GET("/route") void route(@Query("locations") List<Location> location, Callback<String> cb);
+  }
+
+  public static class Location {
+    public double lat;
+    public double lng;
+
+    public Location(double lat, double lng) {
+      this.lat = lat;
+      this.lng = lng;
+    }
   }
 }

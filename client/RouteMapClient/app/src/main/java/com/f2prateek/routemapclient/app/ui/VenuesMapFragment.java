@@ -15,15 +15,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import java.util.Arrays;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import rx.util.functions.Action1;
 
-public class VenuesMapFragment extends MapFragment implements Callback<VenuesResponse> {
+public class VenuesMapFragment extends MapFragment implements Callback<VenuesResponse>,
+    ClusterManager.OnClusterItemClickListener<FoursquareVenue> {
 
   ClusterManager<FoursquareVenue> clusterManager;
+  Location lastKnownLocation;
 
   @Override public void onStart() {
     super.onStart();
@@ -36,10 +39,12 @@ public class VenuesMapFragment extends MapFragment implements Callback<VenuesRes
     locationProvider.getLastKnownLocation().subscribe(new Action1<Location>() {
       @Override
       public void call(Location location) {
+        lastKnownLocation = location;
         centerMap(location);
 
         FoursquareFactory.getInstance()
-            .venues(location.getLatitude(), location.getLongitude(), VenuesMapFragment.this);
+            .venues(new FoursquareFactory.Location(location.getLatitude(), location.getLongitude()),
+                VenuesMapFragment.this);
       }
     });
   }
@@ -53,6 +58,7 @@ public class VenuesMapFragment extends MapFragment implements Callback<VenuesRes
 
     clusterManager.addItems(response.venues);
     clusterManager.cluster();
+    clusterManager.setOnClusterItemClickListener(this);
   }
 
   private void centerMap(Location location) {
@@ -62,6 +68,24 @@ public class VenuesMapFragment extends MapFragment implements Callback<VenuesRes
 
   @Override public void failure(RetrofitError error) {
     Toast.makeText(getActivity(), "An unknown error occurred.", Toast.LENGTH_LONG).show();
+  }
+
+  @Override public boolean onClusterItemClick(FoursquareVenue foursquareVenue) {
+    FoursquareFactory.getInstance()
+        .route(Arrays.asList(new FoursquareFactory.Location(lastKnownLocation.getLatitude(),
+                lastKnownLocation.getLongitude()),
+            new FoursquareFactory.Location(foursquareVenue.location.lat,
+                foursquareVenue.location.lat)
+        ), new Callback<String>() {
+          @Override public void success(String s, Response response) {
+            Toast.makeText(getActivity(), "Got " + s, Toast.LENGTH_LONG).show();
+          }
+
+          @Override public void failure(RetrofitError error) {
+            Toast.makeText(getActivity(), "An unknown error occurred.", Toast.LENGTH_LONG).show();
+          }
+        });
+    return false;
   }
 
   static class VenueRenderer extends DefaultClusterRenderer<FoursquareVenue> {
