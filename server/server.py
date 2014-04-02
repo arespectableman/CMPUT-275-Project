@@ -5,6 +5,8 @@ from map import Map
 import json
 
 app = Flask(__name__)
+app.secret_key = "ZjBjNTUzNWIyMmZmNDRkZGVmYzU5NDY2"
+
 client = Foursquare(client_id='IGJS4FY0IXWLVJVG0IE0IFGIGBVT2HDBK1QAQYMP4WU2VKOE', client_secret='W3SBDEHHTCX2YUSD30Z1RUDIEBJRN3PHTVC0OVBZ0OBGHICK')
 map = Map("edmonton-roads-2.0.1.txt")
 
@@ -27,7 +29,6 @@ def route():
   """
   Generate a route from one location to another.
   """
-
   # Process the coordinates
   def process(val):
     return int(float(val)*100000)
@@ -37,7 +38,7 @@ def route():
   end_lat = process(request.args.get('end_lat', '53.64727'))
   end_lng = process(request.args.get('end_lng', '-113.35890'))
 
-  path = map.find_path(start_lat, start_lng, end_lat, end_lng)
+  path = map.find_path((start_lat, start_lng), (end_lat, end_lng))
 
   return str(map.get_path_names(path))
 

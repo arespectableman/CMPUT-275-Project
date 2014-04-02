@@ -158,14 +158,14 @@ class Map:
         return straight_line_dist(self._location[e[0]][0], self._location[e[0]][1],
                                                    self._location[e[1]][0], self._location[e[1]][1])
 
-    def find_path(self, start_lat, start_lng, end_lat, end_lng):
+    def find_path(self, start, end):
         """
         Find a path from the start coordinates to the end coordinates.
         This simply returns the ids of the vertices.
         Call get_path_names with this path to get a more useful path.
         """
-        start = self.find_closest_vertex(start_lat, start_lng)
-        dest = self.find_closest_vertex(end_lat, end_lng)
+        start = self.find_closest_vertex(start[0], start[1])
+        dest = self.find_closest_vertex(end[0], end[1])
 
         # Find path
         path = self.least_cost_path(self._graph, start, dest, self.cost_distance)
